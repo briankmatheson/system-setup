@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: workstation
+  labels:
+    app: workstation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workstation
+  template:
+    metadata:
+      labels:
+        app: workstation
+    spec:
+      containers:
+      - name: workstation
+        image: ubuntu:latest
+        volumeMounts:
+          - name: data
+            mountPath: /data
+        command: ["sh"]
+        args:
+          - -c
+          - "while true; do sleep 10; done"
+        env:
+          - name: ip-172-20-52-32.ec2.internal
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: volume
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: volume
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1
