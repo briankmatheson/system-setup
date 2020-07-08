@@ -44,6 +44,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: volume
 spec:
+  storageClassName: openebs-local-device-vdc
   accessModes:
   - ReadWriteOnce
   resources:
